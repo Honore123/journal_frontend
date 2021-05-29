@@ -13,6 +13,11 @@ import {
   FormGroup,
   Label,
   Input,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
 } from "reactstrap";
 import { NavLink } from "react-router-dom";
 class Header extends Component {
@@ -21,12 +26,16 @@ class Header extends Component {
     this.state = {
       isOpen: false,
       showModal: false,
+      dropdownOpen: false,
     };
     this.handleLogin = this.handleLogin.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
   }
   toggle() {
     this.setState({ isOpen: !this.state.isOpen });
+  }
+  toggleDrop() {
+    this.setState({ dropdownOpen: !this.state.dropdownOpen });
   }
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
@@ -37,11 +46,14 @@ class Header extends Component {
       email: this.email.value,
       pasword: this.password.value,
     });
-    this.props.loginUser({
-      email: this.email.value,
-      pasword: this.password.value,
-    });
-    this.toggleModal();
+    this.props
+      .loginUser({
+        email: this.email.value,
+        password: this.password.value,
+      })
+      .then(() => {
+        this.toggleModal();
+      });
   }
   handleLogout(e) {
     e.preventDefault();
@@ -53,42 +65,64 @@ class Header extends Component {
       <React.Fragment>
         <Navbar color="primary" dark expand="md">
           <div className="container">
-            <NavbarBrand href="/">
-              <h4>Journal</h4>
+            <NavbarBrand>
+              <NavLink to="/" style={{ textDecoration: "none" }}>
+                <h4 className="text-white">Journal</h4>
+              </NavLink>
             </NavbarBrand>
             <NavbarToggler onClick={() => this.toggle()} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav navbar>
                 <NavItem>
-                  <NavLink className="nav nav-link" to="/myjournal">
-                    My Journal
-                  </NavLink>
+                  {this.props.auth.isAuthenticated &&
+                  !this.props.journals.isLoading ? (
+                    <NavLink className="nav nav-link" to="/myjournal">
+                      My Journal
+                    </NavLink>
+                  ) : (
+                    ""
+                  )}
                 </NavItem>
               </Nav>
-              <Nav navbar className="ms-auto">
-                <NavItem>
-                  <NavLink className="nav nav-link" to="/signup">
-                    Create account
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  {!this.props.auth.isAuthenticated ? (
+              {!this.props.auth.isAuthenticated ? (
+                <Nav navbar className="ms-auto">
+                  <NavItem>
+                    <NavLink className="nav nav-link" to="/signup">
+                      Create account
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
                     <button
                       className="btn btn-outline-info btn-md text-white border-1 rounded-0"
                       onClick={() => this.toggleModal()}
                     >
                       Login
                     </button>
-                  ) : (
-                    <button
+                  </NavItem>
+                </Nav>
+              ) : (
+                <Nav navbar className="ms-auto">
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle
                       className="btn btn-outline-info btn-md text-white border-1 rounded-0"
-                      onClick={this.handleLogout}
+                      nav
+                      caret
                     >
-                      Logout
-                    </button>
-                  )}
-                </NavItem>
-              </Nav>
+                      {this.props.auth.user.fname.substring(0, 1) +
+                        ". " +
+                        this.props.auth.user.lname}
+                    </DropdownToggle>
+                    <DropdownMenu right>
+                      <DropdownItem>Option 1</DropdownItem>
+                      <DropdownItem>Option 2</DropdownItem>
+                      <DropdownItem divider />
+                      <DropdownItem onClick={this.handleLogout}>
+                        Logout
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </Nav>
+              )}
             </Collapse>
           </div>
         </Navbar>
@@ -144,13 +178,23 @@ class Header extends Component {
                     />
                   </FormGroup>
                   <div>
-                    <Button
-                      type="submit"
-                      className="mt-4 mb-5 py-2 w-100"
-                      color="primary"
-                    >
-                      Login
-                    </Button>
+                    {this.props.auth.isLoading ? (
+                      <Button
+                        className="mt-4 mb-5 py-2 w-100"
+                        color="primary"
+                        disabled
+                      >
+                        <Spinner size="sm" color="light" children="" />
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        className="mt-4 mb-5 py-2 w-100"
+                        color="primary"
+                      >
+                        Login
+                      </Button>
+                    )}
                   </div>
                 </Form>
               </div>

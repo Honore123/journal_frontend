@@ -5,6 +5,7 @@ import Journal from "./JournalComponent";
 import CreateAccount from "./CreateAccountComponent";
 import Read from "./ReadComponent";
 import Edit from "./EditComponent";
+import Loading from "./LoadingComponent";
 import { Route, Redirect, Switch, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import {
@@ -16,6 +17,7 @@ import {
   loginUser,
   logoutUser,
 } from "../redux/ActionCreators";
+import { Spinner } from "reactstrap";
 
 const mapStateToProps = (state) => {
   return {
@@ -24,7 +26,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => ({
-  fetchJournals: () => dispatch(fetchJournals()),
+  fetchJournals: (userId) => dispatch(fetchJournals(userId)),
   postJournal: (journal) => dispatch(postJournal(journal)),
   putJournal: (id, journal) => dispatch(putJournal(id, journal)),
   deleteJournal: (id) => dispatch(deleteJournal(id)),
@@ -34,20 +36,31 @@ const mapDispatchToProps = (dispatch) => ({
 });
 class Main extends Component {
   componentDidMount() {
-    this.props.fetchJournals();
+    if (this.props.auth.isAuthenticated) {
+      this.props.fetchJournals(this.props.auth.user.id);
+    }
   }
   render() {
-    const journal = () => {
-      return (
-        <Journal
-          journals={this.props.journals}
-          postJournal={this.props.postJournal}
-          deleteJournal={this.props.deleteJournal}
-        />
-      );
-    };
+    const PrivateRoute = ({ component: Component, ...rest }) => (
+      <Route
+        {...rest}
+        render={(props) =>
+          this.props.auth.isAuthenticated ? (
+            <Component {...props} />
+          ) : (
+            <Redirect
+              to={{
+                pathname: "/",
+                state: { from: props.location },
+              }}
+            />
+          )
+        }
+      />
+    );
+
     const ViewJournal = ({ match }) => {
-      return (
+      return this.props.journals.journals ? (
         <Read
           journal={
             this.props.journals.journals.filter(
@@ -55,10 +68,12 @@ class Main extends Component {
             )[0]
           }
         />
+      ) : (
+        <Loading />
       );
     };
     const EditJournal = ({ match }) => {
-      return (
+      return this.props.journals.journals ? (
         <Edit
           journal={
             this.props.journals.journals.filter(
@@ -66,8 +81,11 @@ class Main extends Component {
             )[0]
           }
           putJournal={this.props.putJournal}
+          postJournal={this.props.postJournal}
           history={this.props.history}
         />
+      ) : (
+        <Loading />
       );
     };
     return (
@@ -76,19 +94,47 @@ class Main extends Component {
           auth={this.props.auth}
           loginUser={this.props.loginUser}
           logoutUser={this.props.logoutUser}
+          journals={this.props.journals}
         />
         <Switch>
-          <Route exact path="/" component={() => <Home />} />
+          <Route
+            exact
+            path="/"
+            component={() => <Home auth={this.props.auth} />}
+          />
           <Route
             exact
             path="/signup"
+            render={(props) =>
+              this.props.auth.isAuthenticated ? (
+                <Redirect
+                  to={{
+                    pathname: "/",
+                    state: { from: props.location },
+                  }}
+                />
+              ) : (
+                <CreateAccount
+                  auth={this.props.auth}
+                  registerUser={this.props.registerUser}
+                />
+              )
+            }
+          />
+          <PrivateRoute
+            exact
+            path="/myjournal"
             component={() => (
-              <CreateAccount registerUser={this.props.registerUser} />
+              <Journal
+                journals={this.props.journals}
+                postJournal={this.props.postJournal}
+                deleteJournal={this.props.deleteJournal}
+                fetchJournals={this.props.fetchJournals}
+              />
             )}
           />
-          <Route exact path="/myjournal" component={journal} />
-          <Route exact path="/view/:id" component={ViewJournal} />
-          <Route exact path="/edit_note/:id" component={EditJournal} />
+          <PrivateRoute exact path="/view/:id" component={ViewJournal} />
+          <PrivateRoute exact path="/edit_note/:id" component={EditJournal} />
           <Redirect to="/" />
         </Switch>
       </div>

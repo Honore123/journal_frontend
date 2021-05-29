@@ -29,9 +29,7 @@ export const Journals = (
         isLoading: false,
         errMess: null,
         journals: state.journals.map((journal) =>
-          action.payload.id === journal.id
-            ? { journal: action.payload }
-            : journal
+          action.payload.id === journal.id ? action.payload : journal
         ),
       };
     case ActionTypes.DELETE_JOURNAL:

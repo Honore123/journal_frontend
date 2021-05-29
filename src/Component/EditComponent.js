@@ -14,28 +14,25 @@ import {
   FormGroup,
   Input,
   Label,
+  Spinner,
+  Alert,
 } from "reactstrap";
 
 class Edit extends Component {
   constructor(props) {
     super(props);
-
+    const { title, note } = props.journal;
     this.state = {
       showEditModal: true,
-      title: "",
-      note: "",
+      title: title,
+      note: note,
+      isSubmitting: false,
+      invalidError: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onInputchange = this.onInputchange.bind(this);
   }
-  componentDidMount() {
-    const { title, note } = this.props.journal;
-    this.setState({ title, note });
-    console.log(this.props);
-  }
-  componentWillUnmount() {
-    console.log("Component unmounted that's error");
-  }
+
   onInputchange(event) {
     this.setState({
       [event.target.name]: event.target.value,
@@ -45,18 +42,27 @@ class Edit extends Component {
   handleSubmit(event) {
     event.preventDefault();
     const { title, note } = this.state;
-    const userId = 1;
+    if (title === "" || note === "") {
+      this.setState({ invalidError: true });
+      return;
+    }
+    this.setState({ isSubmitting: true, invalidError: false });
+
     console.log({
-      title: title,
-      note: note,
-      user_id: userId,
+      title,
+      note,
     });
-    this.props.putJournal(this.props.journal.id, {
-      title: title,
-      note: note,
-      user_id: userId,
-    });
-    this.props.history.push("/");
+    this.props
+      .putJournal(this.props.journal.id, {
+        title,
+        note,
+      })
+      .then(() => {
+        this.setState({ isSubmitting: false });
+      })
+      .then(() => {
+        this.props.history.push("/myjournal");
+      });
   }
   render() {
     return (
@@ -69,6 +75,13 @@ class Edit extends Component {
         <div className="row d-flex justify-content-center">
           <div className="col-md-6 mt-4 ">
             <Form onSubmit={this.handleSubmit}>
+              <Alert
+                color="danger"
+                isOpen={this.state.invalidError}
+                fade={false}
+              >
+                Please fill out the form correctly
+              </Alert>
               <FormGroup>
                 <Label className="mb-2">Title</Label>
                 <Input
@@ -98,15 +111,26 @@ class Edit extends Component {
                     to="/myjournal"
                   >
                     Back
-                  </Link>{" "}
-                  <Button
-                    type="submit"
-                    className="col-md-3 rounded-0"
-                    color="primary"
-                    outline
-                  >
-                    Save
-                  </Button>
+                  </Link>
+                  {this.state.isSubmitting ? (
+                    <Button
+                      className="col-md-3 rounded-0"
+                      color="primary"
+                      outline
+                      disabled
+                    >
+                      <Spinner size="sm" color="primary" children="" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      className="col-md-3 rounded-0"
+                      color="primary"
+                      outline
+                    >
+                      Save
+                    </Button>
+                  )}
                 </div>
               </div>
             </Form>

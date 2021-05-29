@@ -74,7 +74,7 @@ export const Auth = (
         ...state,
         isLoading: false,
         isAuthenticated: false,
-        errMess: action.message,
+        errMess: action.payload,
       };
     default:
       return state;

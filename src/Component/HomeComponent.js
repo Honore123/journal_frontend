@@ -11,12 +11,21 @@ class Home extends Component {
               Write down what's on your mind, and review all your thoughts in a
               single click wherever you are
             </h5>
-            <NavLink
-              to="/signup"
-              className="mt-4 btn btn-outline-warning btn-lg"
-            >
-              Get Started
-            </NavLink>
+            {this.props.auth.isAuthenticated ? (
+              <NavLink
+                to="/myjournal"
+                className="mt-4 btn btn-outline-warning btn-lg"
+              >
+                My Journal
+              </NavLink>
+            ) : (
+              <NavLink
+                to="/signup"
+                className="mt-4 btn btn-outline-warning btn-lg"
+              >
+                Get Started
+              </NavLink>
+            )}
           </div>
           <div className="col-md-6">
             <img src="/assets/image/jumb.jpg" width="100%" alt="" />

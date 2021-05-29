@@ -11,26 +11,54 @@ import {
   FormGroup,
   Label,
   Input,
+  Alert,
 } from "reactstrap";
 class CreateAccount extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      invalidError: false,
+      success: false,
+    };
     this.handleRegister = this.handleRegister.bind(this);
   }
+
   handleRegister(e) {
     e.preventDefault();
+    if (
+      this.fname.value === "" ||
+      this.lname.value === "" ||
+      this.email.value === "" ||
+      this.password.value === ""
+    ) {
+      this.setState({ invalidError: true });
+      return;
+    }
+    this.setState({ invalidError: false });
     console.log({
       fname: this.fname.value,
       lname: this.lname.value,
       email: this.email.value,
       password: this.password.value,
     });
-    this.props.registerUser({
-      fname: this.fname.value,
-      lname: this.lname.value,
-      email: this.email.value,
-      password: this.password.value,
-    });
+    this.props
+      .registerUser({
+        fname: this.fname.value,
+        lname: this.lname.value,
+        email: this.email.value,
+        password: this.password.value,
+      })
+      .then(() => {
+        if (this.props.auth.errMess) {
+          this.setState({ invalidError: true });
+          return;
+        }
+        this.fname.value = "";
+        this.lname.value = "";
+        this.email.value = "";
+        this.password.value = "";
+        this.setState({ success: true });
+      });
   }
   render() {
     return (
@@ -49,6 +77,22 @@ class CreateAccount extends Component {
                   By filling the form below
                 </CardSubtitle>
                 <Form onSubmit={this.handleRegister}>
+                  <Alert
+                    color="danger"
+                    isOpen={this.state.invalidError}
+                    fade={false}
+                  >
+                    {this.props.auth.errMess
+                      ? this.props.auth.errMess
+                      : "Please fill out the form correctly"}
+                  </Alert>
+                  <Alert
+                    color="success"
+                    isOpen={this.state.success}
+                    fade={false}
+                  >
+                    Account has been created successfully, You can login!
+                  </Alert>
                   <FormGroup className="mt-2">
                     <Label for="exampleFname" className="mb-2">
                       Firstname

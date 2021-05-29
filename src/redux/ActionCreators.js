@@ -1,9 +1,14 @@
 import * as ActionTypes from "./ActionTypes";
 import { baseUrl } from "../shared/baseUrl";
 
-export const fetchJournals = () => (dispatch) => {
+export const fetchJournals = (user) => (dispatch) => {
   dispatch(requestJournals());
-  return fetch(baseUrl + "journals")
+  const bearer = "Bearer " + localStorage.getItem("token");
+  return fetch(baseUrl + "journals/" + user, {
+    headers: {
+      Authorization: bearer,
+    },
+  })
     .then(
       (response) => {
         if (response.ok) {
@@ -26,12 +31,14 @@ export const fetchJournals = () => (dispatch) => {
     .catch((error) => dispatch(journalsFailed(error.message)));
 };
 export const postJournal = (journal) => (dispatch) => {
-  dispatch(requestJournals);
+  dispatch(requestJournals());
+  const bearer = "Bearer " + localStorage.getItem("token");
   return fetch(baseUrl + "journals", {
     method: "POST",
     body: JSON.stringify(journal),
     headers: {
       "Content-Type": "application/json",
+      Authorization: bearer,
     },
   })
     .then(
@@ -59,12 +66,14 @@ export const postJournal = (journal) => (dispatch) => {
     });
 };
 export const putJournal = (id, journal) => (dispatch) => {
-  dispatch(requestJournals);
+  dispatch(requestJournals());
+  const bearer = "Bearer " + localStorage.getItem("token");
   return fetch(baseUrl + "journals/" + id, {
     method: "PUT",
     body: JSON.stringify(journal),
     headers: {
       "Content-Type": "application/json",
+      Authorization: bearer,
     },
   })
     .then(
@@ -85,21 +94,21 @@ export const putJournal = (id, journal) => (dispatch) => {
       }
     )
     .then((response) => response.json())
-    .then((journal) => {
-      dispatch(updateJournal(journal));
-      dispatch(fetchJournals());
-    })
+    .then((journal) => dispatch(updateJournal(journal)))
     .catch((error) => {
       dispatch(journalsFailed(error.message));
       console.log("Put Journal ", error.message);
     });
 };
 export const deleteJournal = (id) => (dispatch) => {
-  dispatch(requestJournals);
+  dispatch(requestJournals());
+  const bearer = "Bearer " + localStorage.getItem("token");
   return fetch(baseUrl + "journals/" + id, {
     method: "DELETE",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
+      Authorization: bearer,
     },
   })
     .then(
@@ -228,6 +237,7 @@ export const loginUser = (creds) => (dispatch) => {
         localStorage.setItem("token", response.token);
         localStorage.setItem("creds", JSON.stringify(response.user));
         dispatch(receiveLogin(response));
+        dispatch(fetchJournals(response.user.id));
       } else {
         var error = new Error(
           "Error " + response.status + ": " + response.statusText
