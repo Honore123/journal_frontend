@@ -113,8 +113,6 @@ class Header extends Component {
                         this.props.auth.user.lname}
                     </DropdownToggle>
                     <DropdownMenu right>
-                      <DropdownItem>Option 1</DropdownItem>
-                      <DropdownItem>Option 2</DropdownItem>
                       <DropdownItem divider />
                       <DropdownItem onClick={this.handleLogout}>
                         Logout

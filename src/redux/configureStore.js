@@ -10,7 +10,7 @@ export const ConfigureStore = () => {
       journals: Journals,
       auth: Auth,
     }),
-    applyMiddleware(thunk, logger)
+    applyMiddleware(thunk)
   );
   return store;
 };
