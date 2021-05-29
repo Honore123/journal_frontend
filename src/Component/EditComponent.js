@@ -1,15 +1,7 @@
 import React, { Component } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
-  Card,
-  CardGroup,
-  CardTitle,
-  CardText,
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Form,
   FormGroup,
   Input,
@@ -48,10 +40,6 @@ class Edit extends Component {
     }
     this.setState({ isSubmitting: true, invalidError: false });
 
-    console.log({
-      title,
-      note,
-    });
     this.props
       .putJournal(this.props.journal.id, {
         title,

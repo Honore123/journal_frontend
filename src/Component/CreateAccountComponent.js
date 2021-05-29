@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import {
   Card,
-  CardImg,
-  CardText,
   CardBody,
   CardTitle,
   CardSubtitle,
@@ -35,12 +33,7 @@ class CreateAccount extends Component {
       return;
     }
     this.setState({ invalidError: false });
-    console.log({
-      fname: this.fname.value,
-      lname: this.lname.value,
-      email: this.email.value,
-      password: this.password.value,
-    });
+
     this.props
       .registerUser({
         fname: this.fname.value,

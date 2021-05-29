@@ -56,11 +56,7 @@ class Journal extends Component {
     }
     this.setState({ visibleAlert: false });
     const user = JSON.parse(localStorage.getItem("creds"));
-    console.log({
-      title: this.title.value,
-      note: this.note.value,
-      user_id: user.id,
-    });
+
     this.props
       .postJournal({
         title: this.title.value,

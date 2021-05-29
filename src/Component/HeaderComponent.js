@@ -42,10 +42,6 @@ class Header extends Component {
   }
   handleLogin(e) {
     e.preventDefault();
-    console.log({
-      email: this.email.value,
-      pasword: this.password.value,
-    });
     this.props
       .loginUser({
         email: this.email.value,
@@ -113,7 +109,6 @@ class Header extends Component {
                         this.props.auth.user.lname}
                     </DropdownToggle>
                     <DropdownMenu right>
-                      <DropdownItem divider />
                       <DropdownItem onClick={this.handleLogout}>
                         Logout
                       </DropdownItem>
