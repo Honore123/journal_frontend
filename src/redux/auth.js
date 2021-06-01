@@ -62,6 +62,7 @@ export const Auth = (
         isAuthenticated: false,
         token: null,
         user: null,
+        errMess: null,
       };
     case ActionTypes.REGISTER_SUCCESS:
       return {

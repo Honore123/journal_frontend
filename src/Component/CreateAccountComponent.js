@@ -10,6 +10,7 @@ import {
   Label,
   Input,
   Alert,
+  Spinner,
 } from "reactstrap";
 class CreateAccount extends Component {
   constructor(props) {
@@ -139,13 +140,23 @@ class CreateAccount extends Component {
                     />
                   </FormGroup>
                   <div>
-                    <Button
-                      type="submit"
-                      className="mt-5 mb-4 py-2 w-100"
-                      color="primary"
-                    >
-                      Register
-                    </Button>
+                    {this.props.auth.isLoading ? (
+                      <Button
+                        className="mt-5 mb-4 py-2 w-100"
+                        color="primary"
+                        disabled
+                      >
+                        <Spinner size="sm" color="light" children="" />
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        className="mt-5 mb-4 py-2 w-100"
+                        color="primary"
+                      >
+                        Register
+                      </Button>
+                    )}
                   </div>
                 </Form>
               </CardBody>

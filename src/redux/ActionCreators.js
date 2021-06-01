@@ -173,7 +173,12 @@ export const registerUser = (user) => (dispatch) => {
         if (response.ok) {
           return response;
         } else {
-          var error = new Error(
+          if (response.status === 401) {
+            var error = new Error("Email is Already registered");
+            error.response = response;
+            throw error;
+          }
+          error = new Error(
             "Error " + response.status + ": " + response.statusText
           );
           error.response = response;

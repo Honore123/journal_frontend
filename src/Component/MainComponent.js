@@ -17,7 +17,6 @@ import {
   loginUser,
   logoutUser,
 } from "../redux/ActionCreators";
-import { Spinner } from "reactstrap";
 
 const mapStateToProps = (state) => {
   return {
@@ -64,7 +63,7 @@ class Main extends Component {
         <Read
           journal={
             this.props.journals.journals.filter(
-              (journal) => journal.id == match.params.id
+              (journal) => journal.id === match.params.id
             )[0]
           }
         />
@@ -77,7 +76,7 @@ class Main extends Component {
         <Edit
           journal={
             this.props.journals.journals.filter(
-              (journal) => journal.id == match.params.id
+              (journal) => journal.id === match.params.id
             )[0]
           }
           putJournal={this.props.putJournal}

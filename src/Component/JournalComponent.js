@@ -69,7 +69,7 @@ class Journal extends Component {
   }
 
   render() {
-    const { buttonLabel, className } = this.props;
+    const { className } = this.props;
     const closeBtn = (
       <button
         className="btn btn-outline-primary rounded-1"
