@@ -63,7 +63,7 @@ class Main extends Component {
         <Read
           journal={
             this.props.journals.journals.filter(
-              (journal) => journal.id === match.params.id
+              (journal) => parseInt(journal.id) === parseInt(match.params.id)
             )[0]
           }
         />
@@ -76,7 +76,7 @@ class Main extends Component {
         <Edit
           journal={
             this.props.journals.journals.filter(
-              (journal) => journal.id === match.params.id
+              (journal) => parseInt(journal.id) === parseInt(match.params.id)
             )[0]
           }
           putJournal={this.props.putJournal}
