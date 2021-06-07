@@ -5,6 +5,7 @@ import Journal from "./JournalComponent";
 import CreateAccount from "./CreateAccountComponent";
 import Read from "./ReadComponent";
 import Edit from "./EditComponent";
+import ChangePassword from "./ChangePasswordComponent";
 import Loading from "./LoadingComponent";
 import { Route, Redirect, Switch, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -134,6 +135,7 @@ class Main extends Component {
           />
           <PrivateRoute exact path="/view/:id" component={ViewJournal} />
           <PrivateRoute exact path="/edit_note/:id" component={EditJournal} />
+          <PrivateRoute exact path="/profile" component={()=>(<ChangePassword user = {this.props.auth}/>)}/>
           <Redirect to="/" />
         </Switch>
       </div>

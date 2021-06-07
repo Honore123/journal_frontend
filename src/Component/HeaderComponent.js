@@ -19,7 +19,7 @@ import {
   DropdownItem,
   Spinner,
 } from "reactstrap";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -109,6 +109,12 @@ class Header extends Component {
                         this.props.auth.user.lname}
                     </DropdownToggle>
                     <DropdownMenu right>
+                      <DropdownItem>
+                        <Link to='/profile' className="text-dark" style={{textDecoration: 'none'}}>
+                          Change Password
+                        </Link>
+                      </DropdownItem>
+                      <DropdownItem divider />
                       <DropdownItem onClick={this.handleLogout}>
                         Logout
                       </DropdownItem>
